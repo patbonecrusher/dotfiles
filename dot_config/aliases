@@ -155,9 +155,14 @@ alias tmuxa='tmux attach -t'                        # attach to a named tmux ses
 alias tree='tree -Ch'                               # add color and human-readable file sizes
 alias tx="tmuxinator"                               # alias for tmuxinator   
 
+alias history-stat='history 0 | awk ''{print $2}'' | sort | uniq -c | sort -n -r | head'
+
+
 ## ESP ALIAS
 alias esp531='source ~/.tools/espidf/esp-idf-v5.3.1/export.sh'
 alias helpers='source bin/helpers.sh'
+alias -g mono='--style monochrome'
+alias -g nconfig='menuconfig --style monochrome'
 
 ## PROJECT ALIAS
 alias coc='cd ~/Projects/covenofchaos'              # coven of chaos projects
