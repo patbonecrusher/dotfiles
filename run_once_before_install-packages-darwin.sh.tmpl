@@ -1,7 +1,7 @@
 {{- if eq .chezmoi.os "darwin" -}}
 #!/bin/bash
 
-brew bundle --no-lock --file=/dev/stdin <<EOF
+brew bundle --file=/dev/stdin <<EOF
 brew "atuin"
 brew "git"
 brew "thefuck"
@@ -41,6 +41,7 @@ brew "zellij"
 brew "zenith"
 brew "zlib"
 brew "zoxide"
+brew "zsh"
 brew "lima"
 brew "colima"
 brew "patbonecrusher/splistgo/splistgo"
@@ -57,6 +58,7 @@ cask "fromscratch"
 cask "ghostty"
 cask "gitup"
 cask "hammerspoon"
+cask "lasso"
 cask "ngrok"
 cask "numi"
 cask "obsidian"
@@ -69,7 +71,11 @@ cask "the-unarchiver"
 cask "vlc"
 cask "xquartz"
 cask "zed"
+cask "zen-browser"
 cask "zerotier-one"
 cask "wezterm"
+cask "visual-studio-code"
+cask "1password"
+cask "menuwhere"
 EOF
 {{ end -}}
