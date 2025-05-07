@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-aws s3 sync ~/Projects/covenofchaos/genealogy/famille s3://pat-gen-work/pub --exclude "**/01 - */**" --delete
-rsync -rzuh --progress /Users/pat/Projects/covenofchaos/genealogy/famille/ nostromo.local:/Volumes/nostronomo-pod/Hobby/famille
+aws s3 sync ~/Projects/genealogy/famille s3://pat-gen-work/pub --exclude "**/01 - */**" --delete
+rsync -rzuh --progress /Users/patricklaplante/Projects/genealogy/famille/ pat@nostromo.local:/Volumes/nostronomo-pod/Hobby/famille

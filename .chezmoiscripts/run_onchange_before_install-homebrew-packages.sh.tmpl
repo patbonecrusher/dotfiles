@@ -1,0 +1,50 @@
+#!{{ lookPath "sh" }}
+
+{{ if eq .chezmoi.os "darwin" -}}
+export HOMEBREW_INSTALL_FROM_API=1
+alias brew=/opt/homebrew/bin/brew
+
+brew bundle --file=/dev/stdin <<EOF
+{{ range .packages.brews -}}
+brew {{ . | quote }}
+{{ end -}}
+{{ range .packages.casks -}}
+cask {{ . | quote }}
+{{ end -}}
+
+# Mac App Store manager
+#mas 'Save to Raindrop.io', id: 1549370672
+#mas "Xcode", id: 497799835
+
+mas '1Password for Safari', id: 1569813296
+mas 'Advanced Screen Share', id: 1597458111
+mas 'Bear', id: 1091189122  
+mas 'BLEScanner', id: 1663446245  
+mas 'Bluetooth Inspector', id: 1509085044  
+mas 'Caffeinated', id: 1362171212  
+mas 'Charmstone', id: 1563735522  
+mas 'Flame', id: 325206381   
+mas 'HiddenCity', id: 1124877084  
+mas 'Jigsaws Galore', id: 426250075   
+mas 'Keynote', id: 409183694   
+mas 'Maccy', id: 1527619437  
+mas 'MacFamilyTree 11', id: 6480510488  
+mas 'Microsoft Excel', id: 462058435   
+mas 'Microsoft Word', id: 462054704   
+mas 'Numbers', id: 409203825   
+mas 'Pages', id: 409201541   
+mas 'Pixelmator Pro', id: 1289583905  
+mas 'Quick Note', id: 1472935217  
+mas 'Reeder', id: 1529448980
+mas 'Rsyncinator', id: 1569680330  
+mas 'Scapple', id: 568020055   
+mas 'SnippetsLab', id: 1006087419  
+mas 'Things', id: 904280696   
+mas 'Transloader', id: 572281534   
+mas 'Under My Roof', id: 1524335878  
+mas 'UPDF', id: 1619925971  
+mas 'WiFi Explorer', id: 494803304   
+mas 'Xcode', id: 497799835   
+
+EOF
+{{ end -}}

@@ -1,0 +1,10 @@
+{
+    "terminal.integrated.fontFamily": "JetBrainsMonoNL Nerd Font",
+    "editor.fontFamily": "Astigmata, Menlo, Monaco, 'Courier New', monospace",
+    "workbench.colorTheme": "GitHub Dark Default",
+    "workbench.sideBar.location": "right",
+    "workbench.iconTheme": "vscode-icons",
+    "terminal.integrated.env.osx": {},
+    "cmake.showConfigureWithDebuggerNotification": false,
+    "editor.mouseWheelZoom": true
+}

@@ -52,8 +52,8 @@ bindkey "$terminfo[kcbt]" reverse-menu-complete
 znap eval iterm2 'curl -fsSL https://iterm2.com/shell_integration/zsh'
 
 # `znap function` lets you lazy-load features you don't always need.
-znap function _pyenv pyenv "znap eval pyenv 'pyenv init - --no-rehash'"
-compctl -K    _pyenv pyenv
+# znap function _pyenv pyenv "znap eval pyenv 'pyenv init - --no-rehash'"
+# compctl -K    _pyenv pyenv
 
 # `znap install` adds new commands and completions.
 znap install aureliojargas/clitest zsh-users/zsh-completions
@@ -176,5 +176,7 @@ _zoxide_zsh_tab_completion() {
 if [ "${+functions[compdef]}" -ne 0 ]; then
     compdef _zoxide_zsh_tab_completion z 2> /dev/null
 fi
+
+eval "$(direnv hook zsh)"
 
 export PATH=$PATH:~/.local/scripts

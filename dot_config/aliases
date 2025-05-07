@@ -13,6 +13,7 @@ alias lla='eza -la' # List all files with details including hidden files
 alias llsa='eza -la --sort=size' # List all files with details including hidden files sorted by size
 alias l='ls -l' # List all files with details
 alias lt='ls --tree'
+alias ltpa='(cd ~/Projects/ax && ls --tree -L 3)' # List all files in a tree with details
 
 # File/Directory navigations
 alias j=cdr # Jump around directories
@@ -161,6 +162,7 @@ alias history-stat='history 0 | awk ''{print $2}'' | sort | uniq -c | sort -n -r
 ## ESP ALIAS
 alias esp531='source ~/.tools/espidf/esp-idf-v5.3.1/export.sh'
 alias esp532='source ~/.tools/espidf/esp-idf-v5.3.2/export.sh'
+alias esp540='source ~/.tools/espidf/esp-idf-v5.4.0/export.sh'
 alias helpers='source bin/helpers.sh'
 alias -g mono='--style monochrome'
 alias -g nconfig='menuconfig --style monochrome'
