@@ -21,6 +21,7 @@ packages:
     - delta
     - mcfly
     - gsed
+    - glances
     - hexyl
     - kalker
     - lazygit

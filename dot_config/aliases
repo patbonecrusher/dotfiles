@@ -174,3 +174,5 @@ alias wip='cd /Volumes/wip'                         # wip scratchpad
 alias learning='cd ~/Projects/covenofchaos/learning' # learning projects
 alias down='cd ~/Downloads' # Goto downloads
 alias sand='cd ~/Projects/covenofchaos/sandbox'
+
+alias -g st394='`splistgo path A0:85:E3:FA:92:94`'

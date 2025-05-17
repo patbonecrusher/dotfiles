@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+echo "🧹 Cleaning up dangling Docker images..."
+docker image prune -f
+
+echo "🧺 Removing unused Docker volumes..."
+docker volume prune -f
+
+echo "🗑️ Removing stopped containers..."
+docker container prune -f
+
+echo "✅ Docker cleanup complete."
