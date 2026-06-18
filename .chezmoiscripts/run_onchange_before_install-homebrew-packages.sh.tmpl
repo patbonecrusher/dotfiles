@@ -2,9 +2,15 @@
 
 {{ if eq .chezmoi.os "darwin" -}}
 export HOMEBREW_INSTALL_FROM_API=1
-alias brew=/opt/homebrew/bin/brew
+eval "$(/opt/homebrew/bin/brew shellenv)"
 
-brew bundle --file=/dev/stdin <<EOF
+# Homebrew 6.0 requires third-party taps to be trusted before their formulae load.
+brew trust knqyf263/pet >/dev/null 2>&1 || true
+brew trust patbonecrusher/splistgo >/dev/null 2>&1 || true
+
+# `|| true` so a single failed package (e.g. an unpurchased App Store app) does not
+# abort `chezmoi apply` before the dotfiles are written.
+brew bundle --file=/dev/stdin <<EOF || true
 {{ range .packages.brews -}}
 brew {{ . | quote }}
 {{ end -}}

@@ -1,0 +1,9 @@
+#!{{ lookPath "sh" }}
+
+# Install Homebrew if missing, so the package bundle that follows has `brew`.
+# Sorts before run_onchange_before_install-homebrew-packages (00 < i).
+{{ if eq .chezmoi.os "darwin" -}}
+if [ ! -x /opt/homebrew/bin/brew ]; then
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+{{ end -}}

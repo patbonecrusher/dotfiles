@@ -6,13 +6,16 @@
 
 export XDG_CONFIG_HOME=~/.config
 
-[[ -r ~/.local/zshenv/znap/znap.zsh ]] ||
-    git clone --depth 1 -- https://github.com/marlonrichert/zsh-snap.git ~/.local/zshenv/znap
-
 ##
-# Source Znap at the start of your .zshrc file.
+# Plugin manager: antidote (replaced znap). Plugin list is in ~/.zsh_plugins.txt.
+# `antidote load` bundles + caches + sources it, recompiling when the list changes.
 #
-source ~/.local/zshenv/znap/znap.zsh
+if [[ -r /opt/homebrew/opt/antidote/share/antidote/antidote.zsh ]]; then
+  source /opt/homebrew/opt/antidote/share/antidote/antidote.zsh
+else
+  [[ -d ~/.antidote ]] || git clone --depth=1 https://github.com/mattmc3/antidote ~/.antidote
+  source ~/.antidote/antidote.zsh
+fi
 
 LC_CTYPE=en_US.UTF-8
 LC_ALL=en_US.UTF-8
@@ -23,8 +26,10 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 eval "$(mise activate zsh)"
 
 
-znap source sorin-ionescu/prezto modules/{environment,history}
-znap source ohmyzsh/ohmyzsh plugins/asdf
+# Load all plugins from ~/.zsh_plugins.txt (prezto modules, completions, clitest;
+# fzf-tab + zsh-autosuggestions are deferred to after compinit). Dropped the
+# ohmyzsh asdf plugin — superseded by mise (activated above).
+antidote load
 
 
 # `znap prompt` makes your prompt visible in just 15-40ms!
@@ -42,21 +47,10 @@ eval "$(starship init zsh)"
 # Cache the output of slow commands with `znap eval`.
 #
 
-# `znap source` starts plugins.
-znap source marlonrichert/zsh-autocomplete
-
-bindkey              '^I'         menu-complete
-bindkey "$terminfo[kcbt]" reverse-menu-complete
-
-# `znap eval` makes evaluating generated command output up to 10 times faster.
-znap eval iterm2 'curl -fsSL https://iterm2.com/shell_integration/zsh'
-
-# `znap function` lets you lazy-load features you don't always need.
-# znap function _pyenv pyenv "znap eval pyenv 'pyenv init - --no-rehash'"
-# compctl -K    _pyenv pyenv
-
-# `znap install` adds new commands and completions.
-znap install aureliojargas/clitest zsh-users/zsh-completions
+# NOTE: completion UX is fzf-tab + zsh-autosuggestions (see ~/.zsh_plugins.txt),
+# replacing the old zsh-autocomplete whose live redraw overwrote the multi-line
+# prompt. They're deferred to load after compinit; the default Tab widget is left
+# alone so fzf-tab can hook it (no menu-complete bindings).
 
 # TO enable color in man output using bat
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
@@ -71,6 +65,10 @@ source <(carapace _carapace)
 export _ZO_DATA_DIR="${HOME}/.local/share/zoxide"
 eval "$(zoxide init --cmd cd zsh)"
 source <(fzf --zsh)
+
+# fzf-tab needs zsh's own menu disabled so it can take over the Tab menu.
+# (fzf-tab itself is loaded via antidote, deferred until after compinit.)
+zstyle ':completion:*' menu no
 
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git "
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"

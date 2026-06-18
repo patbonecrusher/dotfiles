@@ -1,5 +1,6 @@
 packages:
   brews:
+    - antidote
     - atuin
     - git
     - thefuck
@@ -31,7 +32,7 @@ packages:
     - mise
     - navi
     - ncurses
-    - neofetch
+    - fastfetch
     - neovim
     - openssl@3
     - knqyf263/pet/pet
@@ -75,11 +76,11 @@ packages:
     - font-source-code-pro
     - font-ubuntu
     - ghostty
-    - gitup
+    - gitup-app
     - google-chrome
     - hammerspoon
     - iina
-    - lasso
+    - lasso-app
     - menuwhere
     - ngrok
     - numi
@@ -94,8 +95,8 @@ packages:
     - visual-studio-code
     - vlc
     - wezterm
-    - xcodes
+    - xcodes-app
     - xquartz
     - zed
-    - zen-browser
+    - zen
     - zerotier-one

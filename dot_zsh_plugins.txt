@@ -1,0 +1,20 @@
+# antidote plugin list — edit, then open a new shell (antidote recompiles on change).
+# Annotations: path:<subdir>  kind:fpath (fpath only)  kind:path (PATH only)
+#              kind:defer (load after first prompt — for ZLE/widget plugins)
+
+# Deferred-load helper (enables `kind:defer`)
+romkatv/zsh-defer
+
+# Prezto modules — environment + history behaviour
+sorin-ionescu/prezto path:modules/environment
+sorin-ionescu/prezto path:modules/history
+
+# Extra completions (its plugin.zsh adds src/ to fpath; compinit runs after `antidote load`)
+zsh-users/zsh-completions
+
+# clitest CLI test tool — exposes the `clitest` command on PATH
+aureliojargas/clitest kind:path
+
+# Interactive UX — deferred so they activate AFTER compinit
+Aloxaf/fzf-tab kind:defer
+zsh-users/zsh-autosuggestions kind:defer
