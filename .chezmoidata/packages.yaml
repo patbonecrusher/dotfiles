@@ -3,6 +3,7 @@ packages:
     - antidote
     - atuin
     - git
+    - gh
     - thefuck
     - asciiquarium
     - bat
@@ -19,8 +20,8 @@ packages:
     - fzf
     - jq
     - yq
-    - delta
-    - gsed
+    - git-delta
+    - gnu-sed
     - hexyl
     - kalker
     - lazygit
