@@ -26,6 +26,7 @@ packages:
     - hexyl
     - kalker
     - lazygit
+    - leaf
     - less
     - mas
     - m-cli
