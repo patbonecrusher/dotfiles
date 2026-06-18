@@ -178,3 +178,7 @@ fi
 eval "$(direnv hook zsh)"
 
 export PATH=$PATH:~/.local/scripts
+
+# Modern-tool helper: `alts` cheat-sheet + intercept `top` (etc.) to offer the
+# modern equivalents you have installed. See ~/.config/zsh/tool-alts.zsh.
+source ~/.config/zsh/tool-alts.zsh
