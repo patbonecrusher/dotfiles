@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  printf 'Usage: %s [--stop] <folder>\n' "${0##*/}" >&2
+  exit 1
+}
+
+kdl_escape() {
+  printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
+}
+
+resolve_path() {
+  python3 -c 'import os, sys; print(os.path.abspath(sys.argv[1]))' "$1"
+}
+
+session_exists() {
+  local session_name=$1
+  zellij list-sessions --short --no-formatting 2>/dev/null | grep -Fxq "$session_name"
+}
+
+shell_cmd=${SHELL:-/bin/zsh}
+if [ ! -x "$shell_cmd" ]; then
+  shell_cmd=/bin/zsh
+fi
+
+stop_session() {
+  local session_name=$1
+  if [ -z "$session_name" ]; then
+    printf 'work-on: no zellij session name available to stop\n' >&2
+    exit 1
+  fi
+
+  if ! session_exists "$session_name"; then
+    printf 'work-on: session %s is not currently running\n' "$session_name" >&2
+    exit 1
+  fi
+
+  exec zellij kill-session "$session_name"
+}
+
+if [ "${1:-}" = "--stop" ]; then
+  shift
+
+  if [ $# -gt 1 ]; then
+    usage
+  fi
+
+  if [ $# -eq 1 ]; then
+    input_path=$1
+    target_path=$(resolve_path "$input_path")
+    session_name="work-on-$(printf '%s' "$target_path" | shasum -a 256 | awk '{print substr($1, 1, 12)}')"
+    stop_session "$session_name"
+  fi
+
+  if [ -n "${ZELLIJ_SESSION_NAME:-}" ]; then
+    stop_session "$ZELLIJ_SESSION_NAME"
+  fi
+
+  printf 'work-on: run this inside Zellij, or pass a folder to stop a specific work-on session\n' >&2
+  exit 1
+fi
+
+if [ $# -ne 1 ]; then
+  usage
+fi
+
+input_path=$1
+if [ -z "$input_path" ]; then
+  usage
+fi
+
+target_path=$(resolve_path "$input_path")
+session_name="work-on-$(printf '%s' "$target_path" | shasum -a 256 | awk '{print substr($1, 1, 12)}')"
+
+if session_exists "$session_name"; then
+  exec zellij attach "$session_name"
+fi
+
+if [ -e "$target_path" ] && [ ! -d "$target_path" ]; then
+  printf 'work-on: %s exists but is not a directory\n' "$target_path" >&2
+  exit 1
+fi
+
+if [ ! -d "$target_path" ]; then
+  printf 'Create folder %s? [y/N] ' "$target_path" >&2
+  read -r reply
+  case ${reply:-} in
+    y|Y|yes|YES)
+      mkdir -p "$target_path"
+      ;;
+    *)
+      printf 'work-on: cancelled\n' >&2
+      exit 1
+      ;;
+  esac
+fi
+
+tab_name=$(basename "$target_path")
+layout_file=$(mktemp "${TMPDIR:-/tmp}/work-on.XXXXXX.kdl")
+cleanup() {
+  rm -f "$layout_file"
+}
+trap cleanup EXIT INT TERM HUP
+
+cat >"$layout_file" <<EOF2
+layout {
+    tab name="$(kdl_escape "$tab_name")" cwd="$(kdl_escape "$target_path")" focus=true {
+        pane split_direction="vertical" {
+            pane size="33%" name="claude" command="$(kdl_escape "$shell_cmd")" {
+                args "-lc" "$(kdl_escape "if command -v claude >/dev/null 2>&1; then
+    # Check if there are existing sessions for this directory
+    project_key=\$(printf '%s' \"\$PWD\" | sed 's|/|-|g; s|^-||')
+    session_dir=\"\${HOME}/.claude/projects/\${project_key}\"
+    if [ -d \"\$session_dir\" ] && ls \"\$session_dir\"/*.jsonl >/dev/null 2>&1; then
+        exec claude --resume
+    else
+        exec claude
+    fi
+fi
+exec $shell_cmd")"
+            }
+            pane split_direction="horizontal" {
+                pane size="50%" name="nvim" command="nvim" {
+                    args "."
+                }
+                pane name="shell" command="$(kdl_escape "$shell_cmd")"
+            }
+        }
+    }
+}
+EOF2
+
+zellij attach --create-background "$session_name" options --default-layout "$layout_file"
+cleanup
+trap - EXIT INT TERM HUP
+exec zellij attach "$session_name"
