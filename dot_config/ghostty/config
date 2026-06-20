@@ -1,6 +1,6 @@
 # By default Reload config with shft + cmd + , 
 
-theme = rose-pine
+theme = Django Reborn Again
 background = #000000
 background-opacity = 0.65
 background-blur-radius = 20
