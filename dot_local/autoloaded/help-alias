@@ -10,7 +10,9 @@ while IFS= read -r line; do
   if [[ $line == '#'* ]]; then                     # section header comment
     print -P -- "\n${fg_bold[red]}${line#\# }${reset_color}"
   elif [[ $line == alias\ * ]]; then
-    name=${${line#alias }%%=*}
+    name=${line#alias }
+    [[ $name == -[a-zA-Z]* ]] && name=${name#* }   # drop a flag word like "-g "
+    name=${name%%=*}
     comments=""
     [[ $line == *'# '* ]] && comments=${line##*'# '}
     print -rP -- "${fg_bold[blue]}${(l:26:)name}${reset_color}: ${fg[green]}${comments}${reset_color}"
