@@ -90,6 +90,7 @@ packages:
     - rapidapi
     - raycast
     - slack
+    - steam
     - tabby
     - the-unarchiver
     - visual-studio-code
