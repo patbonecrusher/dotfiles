@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# description: Print a 24-bit (true-color) test pattern in the terminal.
 #
 #   This file echoes a bunch of 24-bit color codes
 #   to the terminal to demonstrate its functionality.

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# description: Prune dangling Docker images, unused volumes and stopped containers.
 
 echo "🧹 Cleaning up dangling Docker images..."
 docker image prune -f

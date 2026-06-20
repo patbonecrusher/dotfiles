@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# description: Watch a directory for file changes and log them.
 
 WATCH_DIR=${1:-/etc}
 EVENTS="modify,create,delete,move"

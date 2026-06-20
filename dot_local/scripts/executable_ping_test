@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# description: Ping a host (default 8.8.8.8) and log packet loss.
 
 HOST=${1:-8.8.8.8}
 LOGFILE="ping_log_$(date +%F).log"

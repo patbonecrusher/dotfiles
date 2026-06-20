@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# description: List the 10 biggest files under a directory (default: current).
 
 DIR=${1:-.}
 

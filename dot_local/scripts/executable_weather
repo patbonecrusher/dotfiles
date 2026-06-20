@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# description: Show the weather for a location via wttr.in.
 
 # Safer shell script with these options
 # -e          : exit if a command exits with non-zero status
