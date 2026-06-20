@@ -62,8 +62,6 @@ export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense' # optional
 zstyle ':completion:*' format $'\e[2;37mCompleting %d\e[m'
 source <(carapace _carapace)
 
-export _ZO_DATA_DIR="${HOME}/.local/share/zoxide"
-eval "$(zoxide init --cmd cd zsh)"
 source <(fzf --zsh)
 
 # fzf-tab needs zsh's own menu disabled so it can take over the Tab menu.
@@ -171,3 +169,9 @@ export PATH=~/.local/bin:$PATH
 # Modern-tool helper: `alts` cheat-sheet + intercept `top` (etc.) to offer the
 # modern equivalents you have installed. See ~/.config/zsh/tool-alts.zsh.
 source ~/.config/zsh/tool-alts.zsh
+
+# zoxide must be initialized LAST so its chpwd/precmd hook registers after
+# everything else (direnv, tool-alts, etc.). Fixes the `_ZO_DOCTOR` warning
+# "zoxide is not initialized at the end of your shell configuration".
+export _ZO_DATA_DIR="${HOME}/.local/share/zoxide"
+eval "$(zoxide init --cmd cd zsh)"
