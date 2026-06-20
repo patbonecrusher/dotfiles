@@ -1,9 +1,9 @@
 # By default Reload config with shft + cmd + , 
 
 theme = Django Reborn Again
-background = #000000
-background-opacity = 0.65
-background-blur-radius = 20
+# NOTE: don't set an explicit `background` here — it overrides the theme's
+# background and stops the theme from fully applying. (background-opacity /
+# background-blur-radius were removed for the same reason.)
 
 font-family = JetBrainsMonoNL Nerd Font 
 font-size = 14
