@@ -71,7 +71,7 @@ alts() {
 # Commands to intercept with an fzf chooser (space-separated). Extend freely.
 # Only unaliased, occasional commands belong here — aliased ones (ls, cat, grep,
 # tree) never reach the function anyway (alias expansion wins).
-: ${ALTS_INTERCEPT:=top du ps}
+: ${ALTS_INTERCEPT:=top du ps cat}
 
 # shared chooser used by the intercept functions
 _alts_offer() {
@@ -100,10 +100,13 @@ _alts_offer() {
   command $pick "$@"
 }
 
-# define the intercept functions
+# define the intercept functions (drop any conflicting alias first, e.g.
+# cat='bat -A' — aliases otherwise shadow the function; removing cat from
+# ALTS_INTERCEPT restores your original alias).
 () {
   local c
   for c in ${=ALTS_INTERCEPT}; do
+    unalias $c 2>/dev/null
     functions[$c]="_alts_offer $c \"\$@\""
   done
 }
