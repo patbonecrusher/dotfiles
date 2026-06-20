@@ -1,0 +1,26 @@
+# description: Show the modern CLI tools you have installed for a classic command.
+# usage: alts [command]   (no arg = full cheat-sheet; e.g. `alts top`)
+
+# Reads the MODERN_ALTS / ALT_DESC maps defined in ~/.config/zsh/tool-alts.zsh.
+emulate -L zsh
+local cmd=$1 key bin shown list
+
+if [[ -z $cmd ]]; then
+  print -P "%BModern tool cheat-sheet%b — what you have installed:"
+  for key in ${(ko)MODERN_ALTS}; do
+    shown=""
+    for bin in ${(z)MODERN_ALTS[$key]}; do
+      (( $+commands[$bin] )) && shown+="$bin "
+    done
+    [[ -n $shown ]] && printf '  %-8s → %s\n' "$key" "${shown% }"
+  done
+  print -P "\nType e.g. %Balts top%b for descriptions."
+  return
+fi
+
+list=${MODERN_ALTS[$cmd]}
+[[ -z $list ]] && { print "No modern alternatives mapped for '$cmd'."; return 1; }
+print -P "Modern alternatives for %B$cmd%b:"
+for bin in ${(z)list}; do
+  (( $+commands[$bin] )) && printf '  %-8s %s\n' "$bin" "${ALT_DESC[$bin]:-}"
+done

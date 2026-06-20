@@ -44,29 +44,8 @@ typeset -gA ALT_DESC=(
   zoxide 'smarter cd (z)'
 )
 
-# `alts [cmd]` — show installed modern alternatives
-alts() {
-  emulate -L zsh
-  local cmd=$1 key bin shown
-  if [[ -z $cmd ]]; then
-    print -P "%BModern tool cheat-sheet%b — what you have installed:"
-    for key in ${(ko)MODERN_ALTS}; do
-      shown=""
-      for bin in ${(z)MODERN_ALTS[$key]}; do
-        (( $+commands[$bin] )) && shown+="$bin "
-      done
-      [[ -n $shown ]] && printf '  %-8s → %s\n' "$key" "${shown% }"
-    done
-    print -P "\nType e.g. %Balts top%b for descriptions."
-    return
-  fi
-  local list=${MODERN_ALTS[$cmd]}
-  [[ -z $list ]] && { print "No modern alternatives mapped for '$cmd'."; return 1; }
-  print -P "Modern alternatives for %B$cmd%b:"
-  for bin in ${(z)list}; do
-    (( $+commands[$bin] )) && printf '  %-8s %s\n' "$bin" "${ALT_DESC[$bin]:-}"
-  done
-}
+# The user-facing `alts` command lives in ~/.local/autoloaded/alts (so `help`
+# documents it). It reads the MODERN_ALTS / ALT_DESC maps defined above.
 
 # Commands to intercept with an fzf chooser (space-separated). Extend freely.
 # Only unaliased, occasional commands belong here — aliased ones (ls, cat, grep,

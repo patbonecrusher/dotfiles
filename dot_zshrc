@@ -104,7 +104,7 @@ autoload -Uz $fpath[1]/*(.:t)
 #region path definitions
 export aliases_location="$HOME/.config/aliases" && source "$aliases_location"
 export shell_functions_location="$HOME/.local/autoloaded"
-export bin_functions_location="$HOME/.dotfiles/bin"
+export bin_functions_location="$HOME/.local/scripts"
 export PATH=$bin_functions_location:$PATH
 
 function pet-select() {

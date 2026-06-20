@@ -1,8 +1,73 @@
-# description: Print all help for my functions/aliases.
-# usage: alias-add name 'somecommand' 'some comments for the help'
-# result: Will add: name='somecommand' # some comments for the help
+# description: Help for your functions, scripts & aliases. `help`, `help <name>`, or fzf browser.
+# usage: help [name|pattern]
 
-if [[ $# -eq 0 ]]; then
-    help-alias
-    help-functions
+emulate -L zsh
+autoload -U colors && colors
+local d f base desc line name q
+
+# --- `help <name>` : look up a single function/script/alias ---------------
+if (( $# )); then
+  q=${(L)*}
+  local hit=0
+  for d in "$shell_functions_location" "$bin_functions_location"; do
+    [[ -d $d ]] || continue
+    for f in "$d"/*(N.); do
+      base=${f:t}
+      [[ $base == _* ]] && continue
+      [[ ${(L)base} == *$q* ]] || continue
+      hit=1
+      print -P -- "${fg_bold[blue]}${base}${reset_color}  ${fg[cyan]}(${d:t})${reset_color}"
+      sed -En 's/^# (description|usage|result): /  /p' "$f"
+    done
+  done
+  while IFS= read -r line; do
+    [[ $line == alias\ * ]] || continue
+    name=${${line#alias }%%=*}
+    [[ ${(L)name} == *$q* ]] || continue
+    hit=1
+    print -P -- "${fg_bold[magenta]}${name}${reset_color}  ${fg[cyan]}(alias)${reset_color}"
+    print -r -- "  ${line#alias }"
+  done < "$aliases_location"
+  (( hit )) || print -P "${fg[red]}No command matching '$*'.${reset_color}"
+  return
 fi
+
+# --- no args: fzf browser when interactive, plain dump when piped ----------
+if [[ -t 1 ]] && (( $+commands[fzf] )); then
+  local sel
+  sel=$(
+    {
+      for d in "$shell_functions_location" "$bin_functions_location"; do
+        [[ -d $d ]] || continue
+        local kind=fn; [[ $d == $bin_functions_location ]] && kind=script
+        for f in "$d"/*(N.); do
+          base=${f:t}; [[ $base == _* ]] && continue
+          desc=$(sed -n 's/^# description: //p' "$f" | head -1)
+          printf '%s\t%s\t%s\n' "$base" "$kind" "${desc:-—}"
+        done
+      done
+      while IFS= read -r line; do
+        [[ $line == alias\ * ]] || continue
+        name=${${line#alias }%%=*}
+        desc=""; [[ $line == *'# '* ]] && desc=${line##*'# '}
+        printf '%s\t%s\t%s\n' "$name" "alias" "${desc:-—}"
+      done < "$aliases_location"
+    } | sort -f | fzf --delimiter='\t' --with-nth='1,3' --nth=1 \
+          --height='80%' --reverse --border --prompt='help ▶ ' \
+          --header='your commands — type to filter, Enter for details' \
+          --preview-window='down,9,wrap' \
+          --preview '
+            n={1}; k={2}
+            if [ "$k" = alias ]; then
+              grep -E "^alias $n=" "$aliases_location"
+            else
+              p="$shell_functions_location/$n"; [ -f "$p" ] || p="$bin_functions_location/$n"
+              grep -E "^# (description|usage|result):" "$p" | sed "s/^# //"
+            fi'
+  )
+  [[ -n $sel ]] && help "${sel%%$'\t'*}"
+  return
+fi
+
+help-alias
+help-functions

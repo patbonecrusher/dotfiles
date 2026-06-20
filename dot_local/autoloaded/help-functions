@@ -1,54 +1,18 @@
-#!/usr/bin/env zsh
+# description: List your shell functions and scripts with their descriptions.
 
-# description: Print help for my shell functions.
-# usage: alias-add name 'somecommand' 'some comments for the help'
-# result: Will add: name='somecommand' # some comments for the help
+emulate -L zsh
+autoload -U colors && colors
+local f base desc d label
 
-autoload colors; colors
-
-black=$(tput setaf 0)
-red=$(tput setaf 1)
-green=$(tput setaf 2)
-yellow=$(tput setaf 3)
-lime_yellow=$(tput setaf 190)
-powder_blue=$(tput setaf 153)
-blue=$(tput setaf 4)
-magenta=$(tput setaf 5)
-cyan=$(tput setaf 6)
-white=$(tput setaf 7)
-bright=$(tput bold)
-normal=$(tput sgr0)
-blink=$(tput blink)
-reverse=$(tput smso)
-underline=$(tput smul)
-
-function document {
-    fname=$(basename $1)
-    description=
-    usage=
-    result=
-
-    while read line
-    do
-        # echo $line
-        [[ $line = "# description: "* ]] && description=${line:15}
-        [[ $line = "# usage: "* ]] && usage=${line:9}
-        [[ $line = "# result: "* ]] && result=${line:10}
-    done < $1
-
-    printf "%28s: %s\n" "${bold}${blue}$fname${normal}" "${green}$description${normal}"
-}
-
-echo ""
-echo ${lime_yellow}Shell functions${normal}
-for entry in "$shell_functions_location"/*
-do
-    document $entry
-done
-
-echo ""
-echo ${lime_yellow}Scripts${normal}
-for entry in "$bin_functions_location"/*
-do
-    document $entry
+for d in "$shell_functions_location:Shell functions" "$bin_functions_location:Scripts"; do
+  label=${d##*:}
+  d=${d%%:*}
+  [[ -d $d ]] || continue
+  print -P -- "\n${fg_bold[yellow]}${label}${reset_color}"
+  for f in "$d"/*(N.); do
+    base=${f:t}
+    [[ $base == _* ]] && continue              # skip private helpers
+    desc=$(sed -n 's/^# description: //p' "$f" | head -1)
+    print -rP -- "${fg_bold[blue]}${(l:26:)base}${reset_color}: ${fg[green]}${desc:-—}${reset_color}"
+  done
 done
