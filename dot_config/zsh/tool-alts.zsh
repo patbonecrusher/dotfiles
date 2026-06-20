@@ -69,7 +69,9 @@ alts() {
 }
 
 # Commands to intercept with an fzf chooser (space-separated). Extend freely.
-: ${ALTS_INTERCEPT:=top}
+# Only unaliased, occasional commands belong here — aliased ones (ls, cat, grep,
+# tree) never reach the function anyway (alias expansion wins).
+: ${ALTS_INTERCEPT:=top du ps}
 
 # shared chooser used by the intercept functions
 _alts_offer() {
@@ -80,7 +82,10 @@ _alts_offer() {
     (( $+commands[$bin] )) && choices+=$bin
   done
   choices+=$cmd                                   # always allow the real command
-  if (( ${#choices} <= 1 )) || ! (( $+commands[fzf] )); then
+  # Skip the picker (run the real command) when there's nothing to choose, when
+  # fzf is missing, or when output isn't a terminal (piped/redirected/scripted) —
+  # so `du -sh * | sort` and `ps aux | grep x` behave normally.
+  if (( ${#choices} <= 1 )) || ! (( $+commands[fzf] )) || [[ ! -t 1 ]]; then
     command $cmd "$@"; return
   fi
   local pick
