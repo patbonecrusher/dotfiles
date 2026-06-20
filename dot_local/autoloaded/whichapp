@@ -1,0 +1,24 @@
+# description: Which app owns a macOS background-item / code-signing name?
+
+# macOS lists Login Items & "Allow in the Background" entries by their code-signing
+# identity — often an individual developer's legal name, not the app name. Pass a
+# name (or any substring) to find the matching app; no args lists every app + signer.
+#
+#   whichapp maillot      ->  Espanso    Auca Coyan Maillot (6424323YUH)
+#   whichapp              ->  full list, sorted by app name
+
+emulate -L zsh
+local pat="$*" app auth name needle hay
+needle="${(L)pat}"
+local dirs=(/Applications /Applications/Utilities /System/Applications ~/Applications)
+
+for app in ${^dirs}/*.app(N); do
+  auth=$(codesign -dvv "$app" 2>&1 | sed -n 's/^Authority=Developer ID Application: //p' | head -1)
+  [[ -z $auth ]] && auth=$(codesign -dvv "$app" 2>&1 | sed -n 's/^Authority=//p' | head -1)
+  [[ -z $auth ]] && auth="(unsigned / Apple system)"
+  name="${app:t:r}"
+  hay="${(L)name} ${(L)auth}"
+  if [[ -z $needle || "$hay" == *"$needle"* ]]; then
+    printf '%-32s  %s\n' "$name" "$auth"
+  fi
+done | sort
