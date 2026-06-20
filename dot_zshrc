@@ -107,19 +107,7 @@ export shell_functions_location="$HOME/.local/autoloaded"
 export bin_functions_location="$HOME/.local/scripts"
 export PATH=$bin_functions_location:$PATH
 
-function pet-select() {
-  BUFFER=$(pet search --query "$LBUFFER")
-  CURSOR=$#BUFFER
-  zle redisplay
-}
-zle -N pet-select
 stty -ixon
-bindkey '^s' pet-select
-
-function prev() {
-  PREV=$(fc -lrn | head -n 1)
-  sh -c "pet new `printf %q "$PREV"`"
-}
 
 source $XDG_CONFIG_HOME/aliases
 

@@ -35,7 +35,6 @@ packages:
     - fastfetch
     - neovim
     - openssl@3
-    - knqyf263/pet/pet
     - readline
     - ripgrep
     - sqlite
@@ -64,7 +63,6 @@ packages:
     - caffeine
     - daisydisk
     - devtoys
-    - docker
     - espanso
     - font-hack-nerd-font
     - font-lato
@@ -86,7 +84,6 @@ packages:
     - ngrok
     - numi
     - obsidian
-    - orbstack
     - raindropio
     - rapidapi
     - raycast
