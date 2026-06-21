@@ -178,3 +178,10 @@ alias down='cd ~/Downloads' # Goto downloads
 alias sand='cd ~/Projects/covenofchaos/sandbox'
 
 alias -g st394='`splistgo path A0:85:E3:FA:92:94`'
+
+# Genealogy shortcuts (ascendances restructure tools)
+alias gnext='cd ~/Projects/genealogy/famille/ascendances && python3 -m tools.restructure.run_lineage --next'
+alias gdone='cd ~/Projects/genealogy/famille/ascendances && python3 -m tools.restructure.run_lineage --done'
+alias gfind='cd ~/Projects/genealogy/famille/ascendances && python3 -m tools.restructure.run_lineage --find'
+alias glineage='cd ~/Projects/genealogy/famille/ascendances && python3 -m tools.restructure.run_lineage'
+alias gverify='cd ~/Projects/genealogy/famille/ascendances && python3 -m tools.restructure.run_verify'
