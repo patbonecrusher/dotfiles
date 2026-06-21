@@ -2,4 +2,4 @@
 # description: Back up the genealogy 'famille' folder to S3 and nostromo.
 
 aws s3 sync ~/Projects/genealogy/famille s3://pat-gen-work/pub --exclude "**/01 - */**" --delete
-rsync -rzuh --progress /Users/patricklaplante/Projects/genealogy/famille/ pat@nostromo.local:/Volumes/nostronomo-pod/Hobby/famille
+rsync -rzuh --progress /Users/pat/Projects/genealogy/famille/ pat@nostromo.local:/Volumes/nostronomo-pod/Hobby/famille
