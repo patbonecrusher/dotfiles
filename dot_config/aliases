@@ -94,7 +94,9 @@ alias vscode_uninstall_ext='code --uninstall-extension ' # Uninstall extension
 # Uncategorized
 alias macinfo='neofetch' # Display system info.
 alias diskinfo='diskutil list' # List all disk attached to this computer.
-alias rm='trash-put' # Node app that sends file to trash can.
+# rm -> native macOS `trash` (moves to Trash instead of deleting). `trash` removes
+# directories on its own and rejects rm-style flags, so drop -r/-f/-i/-v/etc.
+rm() { local f=(); for a in "$@"; do [[ $a == -* ]] || f+=("$a"); done; command trash "${f[@]}"; }
 alias -g CA="2>&1 | cat -A"
 alias -g C='| wc -l'
 alias -g D="DISPLAY=:0.0"
