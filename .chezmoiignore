@@ -1,0 +1,5 @@
+# Files here are NOT deployed to $HOME (they stay in the repo only).
+
+# The repo README is for GitHub, not a dotfile. Leading slash anchors it to the
+# root so it only matches ~/README.md — NOT .config/nvim/README.md etc.
+/README.md
