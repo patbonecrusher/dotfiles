@@ -86,6 +86,10 @@ _alts_offer() {
   local c
   for c in ${=ALTS_INTERCEPT}; do
     unalias $c 2>/dev/null
-    functions[$c]="_alts_offer $c \"\$@\""
+    # Fall back to the real command when _alts_offer isn't in scope. These wrapper
+    # functions can be inherited by a shell that never loaded this helper (so
+    # _alts_offer is undefined); without the guard, cat/du/ps/top would then throw
+    # "_alts_offer: command not found".
+    functions[$c]="if (( \$+functions[_alts_offer] )); then _alts_offer $c \"\$@\"; else command $c \"\$@\"; fi"
   done
 }
