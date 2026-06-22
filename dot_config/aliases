@@ -96,6 +96,9 @@ alias macinfo='neofetch' # Display system info.
 alias diskinfo='diskutil list' # List all disk attached to this computer.
 # rm -> native macOS `trash` (moves to Trash instead of deleting). `trash` removes
 # directories on its own and rejects rm-style flags, so drop -r/-f/-i/-v/etc.
+# Drop any pre-existing `rm` alias first — otherwise zsh tries to define the
+# function from the alias-expanded name and throws a parse error on this line.
+unalias rm 2>/dev/null
 rm() { local f=(); for a in "$@"; do [[ $a == -* ]] || f+=("$a"); done; command trash "${f[@]}"; }
 alias -g CA="2>&1 | cat -A"
 alias -g C='| wc -l'
