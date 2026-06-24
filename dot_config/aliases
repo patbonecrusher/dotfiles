@@ -187,4 +187,5 @@ alias gnext='cd ~/Projects/genealogy/famille/ascendances && python3 -m tools.res
 alias gdone='cd ~/Projects/genealogy/famille/ascendances && python3 -m tools.restructure.run_lineage --done'
 alias gfind='cd ~/Projects/genealogy/famille/ascendances && python3 -m tools.restructure.run_lineage --find'
 alias glineage='cd ~/Projects/genealogy/famille/ascendances && python3 -m tools.restructure.run_lineage'
+alias gleft='cd ~/Projects/genealogy/famille/ascendances && python3 -m tools.restructure.run_lineage --list'
 alias gverify='cd ~/Projects/genealogy/famille/ascendances && python3 -m tools.restructure.run_verify'
