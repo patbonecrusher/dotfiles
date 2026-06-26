@@ -94,6 +94,7 @@ alias vscode_uninstall_ext='code --uninstall-extension ' # Uninstall extension
 # Uncategorized
 alias macinfo='neofetch' # Display system info.
 alias diskinfo='diskutil list' # List all disk attached to this computer.
+alias topcpu='ps -Aceo pcpu,comm -r | head' # Top processes by CPU usage
 # rm -> native macOS `trash` (moves to Trash instead of deleting). `trash` removes
 # directories on its own and rejects rm-style flags, so drop -r/-f/-i/-v/etc.
 # Drop any pre-existing `rm` alias first — otherwise zsh tries to define the
