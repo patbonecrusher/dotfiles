@@ -92,7 +92,7 @@ alias vscode_install_ext='code --install-extension ' # Install extension
 alias vscode_uninstall_ext='code --uninstall-extension ' # Uninstall extension
 
 # Uncategorized
-alias macinfo='neofetch' # Display system info.
+alias macinfo='fastfetch' # Display system info (neofetch is archived; fastfetch replaces it).
 alias diskinfo='diskutil list' # List all disk attached to this computer.
 alias topcpu='ps -Aceo pcpu,comm -r | head' # Top processes by CPU usage
 # rm -> native macOS `trash` (moves to Trash instead of deleting). `trash` removes
