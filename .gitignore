@@ -1,0 +1,4 @@
+# Managed by chezmoi locally, but never pushed to this (public) repo.
+# ~/.ssh/config is tracked in the chezmoi source for `chezmoi apply`, but we
+# don't want it in the public dotfiles repo — even though it holds no secrets.
+private_dot_ssh/
