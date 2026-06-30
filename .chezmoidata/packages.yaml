@@ -89,6 +89,7 @@ packages:
     - rapidapi
     - raycast
     - readdle-spark
+    - secretive
     - slack
     - steam
     - tabby
