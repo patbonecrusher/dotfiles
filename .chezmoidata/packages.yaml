@@ -23,6 +23,7 @@ packages:
     - yq
     - git-delta
     - gnu-sed
+    - herdr
     - hexyl
     - kalker
     - lazygit

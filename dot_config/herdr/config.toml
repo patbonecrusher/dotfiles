@@ -1,0 +1,33 @@
+# herdr — terminal agent multiplexer (tmux alternative). ~/.config/herdr/config.toml
+# Full default reference: `herdr --default-config`. Managed by chezmoi.
+
+# We pre-configure, so skip the first-run onboarding prompt.
+onboarding = false
+
+[theme]
+# "terminal" makes herdr inherit the host terminal's ANSI palette, so the
+# Ghostty "Django Reborn Again" theme shows through — same reasoning as keeping
+# tmux's window-style on `default`. Swap for catppuccin/tokyo-night/etc. to taste.
+name = "terminal"
+
+[terminal]
+# default_shell left unset → uses $SHELL (brew zsh), then /bin/sh.
+# New panes/tabs/splits open in the source pane's directory.
+new_cwd = "follow"
+
+[keys]
+# tmux-familiar prefix. No collision with the rest of the stack: Ghostty uses
+# super+b (⌘b), and nvim/vim-tmux-navigator uses bare ctrl+h/j/k/l while herdr's
+# pane focus is prefix+h/j/k/l.
+prefix = "ctrl+b"
+
+# lazygit in a throwaway pane, closes on exit.
+[[keys.command]]
+key = "prefix+alt+g"
+type = "pane"
+command = "lazygit"
+
+[session]
+# herdr is an agent multiplexer and I run `claude` in panes — restore agent
+# conversation sessions after a herdr server restart.
+resume_agents_on_restore = true
