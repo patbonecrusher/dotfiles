@@ -8,9 +8,13 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 brew trust knqyf263/pet >/dev/null 2>&1 || true
 brew trust patbonecrusher/splistgo >/dev/null 2>&1 || true
 
+# `--no-upgrade`: only install MISSING packages on apply; never upgrade already-installed
+# ones. Re-linking a cask (esp. auto_updates apps like readdle-spark) re-applies macOS's
+# com.apple.quarantine flag, which then trips the "Apple could not verify… free of malware"
+# Gatekeeper dialog. This keeps `chezmoi apply` idempotent; run `brew upgrade` manually to update.
 # `|| true` so a single failed package (e.g. an unpurchased App Store app) does not
 # abort `chezmoi apply` before the dotfiles are written.
-brew bundle --file=/dev/stdin <<EOF || true
+brew bundle --no-upgrade --file=/dev/stdin <<EOF || true
 {{ range .packages.brews -}}
 brew {{ . | quote }}
 {{ end -}}
