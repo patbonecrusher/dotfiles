@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# description: Reset macOS Universal Control when the shared cursor gets trapped on a
+# Mac. Restarts the UniversalControl daemon (it relaunches automatically), returning
+# pointer/keyboard control. Run it on whichever Mac currently holds the stuck cursor.
+set -uo pipefail
+
+# -9 (SIGKILL) is required: UniversalControl traps SIGTERM and ignores a plain
+# killall. launchd relaunches it immediately, which re-establishes the link.
+killall -9 UniversalControl 2>/dev/null && echo "Universal Control reset — cursor should return." \
+  || echo "UniversalControl was not running (nothing to reset)."
