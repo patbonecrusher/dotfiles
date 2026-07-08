@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# description: Enable/disable macOS Handoff (and with it Universal Clipboard — the shared
+# clipboard has no independent switch). NOTE: Universal Control (shared mouse/keyboard)
+# REQUIRES Handoff, so `handoff off` also disables input-sharing on this Mac. Only run it
+# on a Mac where you don't drive/share input via Universal Control.
+set -uo pipefail
+
+DOMAIN="com.apple.coreservices.useractivityd"
+
+is_disabled() {
+  [[ "$(defaults -currentHost read "$DOMAIN" ActivityReceivingAllowed 2>/dev/null)" == "0" ]]
+}
+restart_daemons() { killall useractivityd 2>/dev/null || true; killall sharingd 2>/dev/null || true; }
+
+disable_handoff() {
+  # Write to both the ByHost (-currentHost, what the GUI uses) and plain domain,
+  # since sources disagree on which macOS reads. Belt-and-suspenders.
+  for scope in "-currentHost" ""; do
+    defaults $scope write "$DOMAIN" ActivityAdvertisingAllowed -bool false
+    defaults $scope write "$DOMAIN" ActivityReceivingAllowed  -bool false
+  done
+  restart_daemons
+  echo "Handoff DISABLED — Universal Clipboard off (Universal Control still works)."
+}
+enable_handoff() {
+  # Delete the overrides so it reverts to the enabled default, in both locations.
+  for scope in "-currentHost" ""; do
+    defaults $scope delete "$DOMAIN" ActivityAdvertisingAllowed 2>/dev/null || true
+    defaults $scope delete "$DOMAIN" ActivityReceivingAllowed  2>/dev/null || true
+  done
+  restart_daemons
+  echo "Handoff ENABLED — Universal Clipboard on."
+}
+status() { is_disabled && echo "Handoff: OFF (clipboard not shared)" || echo "Handoff: ON (clipboard shared)"; }
+
+case "${1:-status}" in
+  off|disable) disable_handoff ;;
+  on|enable)   enable_handoff ;;
+  toggle)      is_disabled && enable_handoff || disable_handoff ;;
+  status|"")   status ;;
+  *) echo "usage: handoff [on|off|toggle|status]" >&2; exit 2 ;;
+esac
