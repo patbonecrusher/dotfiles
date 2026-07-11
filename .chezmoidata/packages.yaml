@@ -92,6 +92,7 @@ packages:
     - readdle-spark
     - secretive
     - slack
+    - soulver
     - steam
     - tabby
     - the-unarchiver
