@@ -14,6 +14,16 @@ hs.hotkey.bind({ "ctrl", "alt", "cmd" }, "U", function()
   hs.alert.show("↩︎ Universal Control reset")
 end)
 
+-- Force display to sleep now -------------------------------------------------
+-- Ctrl+Alt+Cmd+S sleeps the display immediately, even when an app (e.g.
+-- Factorio via SDL_DisableScreenSaver) holds a PreventUserIdleDisplaySleep
+-- assertion that blocks the normal timeout / screen saver. `pmset` lives in
+-- /usr/bin, which isn't on Hammerspoon's PATH, so call it by absolute path.
+hs.hotkey.bind({ "ctrl", "alt", "cmd" }, "S", function()
+  hs.execute("/usr/bin/pmset displaysleepnow")
+  hs.alert.show("󰤄 Display sleeping")
+end)
+
 -- Auto-reload this config whenever a .lua file here changes ------------------
 hs.configWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", function(files)
   for _, f in ipairs(files) do
