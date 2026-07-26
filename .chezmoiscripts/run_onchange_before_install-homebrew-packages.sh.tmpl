@@ -7,6 +7,7 @@ eval "$(/opt/homebrew/bin/brew shellenv)"
 # Homebrew 6.0 requires third-party taps to be trusted before their formulae load.
 brew trust knqyf263/pet >/dev/null 2>&1 || true
 brew trust patbonecrusher/splistgo >/dev/null 2>&1 || true
+brew trust nikitabobko/tap >/dev/null 2>&1 || true   # AeroSpace tiling WM
 
 # `--no-upgrade`: only install MISSING packages on apply; never upgrade already-installed
 # ones. Re-linking a cask (esp. auto_updates apps like readdle-spark) re-applies macOS's
