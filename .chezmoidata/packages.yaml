@@ -82,6 +82,7 @@ packages:
     - google-chrome
     - hammerspoon
     - iina
+    - karabiner-elements
     - lasso-app
     - menuwhere
     - ngrok
