@@ -24,6 +24,35 @@ hs.hotkey.bind({ "ctrl", "alt", "cmd" }, "S", function()
   hs.alert.show("󰤄 Display sleeping")
 end)
 
+-- Open the current Finder folder in Gen Grabber -----------------------------
+-- Ctrl+Alt+Cmd+G resolves the folder to hand off: a selected folder/disk, the
+-- container of a selected file, or (nothing selected) the front window's folder.
+hs.hotkey.bind({ "ctrl", "alt", "cmd" }, "G", function()
+  local script = [[
+    tell application "Finder"
+      if (count of (selection as list)) > 0 then
+        set theItem to item 1 of (selection as list)
+        if class of theItem is folder or class of theItem is disk then
+          set p to (theItem as alias)
+        else
+          set p to (container of theItem as alias)   -- a file → its folder
+        end if
+      else
+        set p to (target of front window as alias)    -- nothing selected → window's folder
+      end if
+      return POSIX path of p
+    end tell
+  ]]
+  local ok, path = hs.osascript.applescript(script)
+  if ok and path then
+    local function shquote(s) return "'" .. s:gsub("'", "'\\''") .. "'" end
+    hs.execute("/usr/bin/open -b com.gengrabber.GenGrabber " .. shquote(path))
+    hs.alert.show("Gen Grabber → " .. path:gsub("/$", ""):match("[^/]+$"))
+  else
+    hs.alert.show("No Finder folder to open")
+  end
+end)
+
 -- Auto-reload this config whenever a .lua file here changes ------------------
 hs.configWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", function(files)
   for _, f in ipairs(files) do
