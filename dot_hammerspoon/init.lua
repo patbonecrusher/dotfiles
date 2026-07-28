@@ -53,6 +53,40 @@ hs.hotkey.bind({ "ctrl", "alt", "cmd" }, "G", function()
   end
 end)
 
+-- Open the current Finder selection in MassRename ---------------------------
+-- Ctrl+Alt+Cmd+R passes every selected file/folder to MassRename.app as argv
+-- (via `open -n -a … --args`), so names with spaces/special chars need no
+-- escaping. Does nothing if Finder isn't frontmost or nothing is selected.
+local MASS_RENAME_APP = "/Applications/MassRename.app"
+
+local function finderSelection()
+  local script = [[
+    tell application "Finder"
+      set theSelection to selection
+      set thePaths to {}
+      repeat with anItem in theSelection
+        set end of thePaths to POSIX path of (anItem as alias)
+      end repeat
+      return thePaths
+    end tell
+  ]]
+  local ok, result = hs.osascript.applescript(script)
+  if not ok or type(result) ~= "table" then return {} end
+  return result
+end
+
+hs.hotkey.bind({ "ctrl", "alt", "cmd" }, "R", function()
+  local paths = finderSelection()
+  if #paths == 0 then
+    hs.alert.show("Mass Rename: no files selected in Finder")
+    return
+  end
+  local args = { "-n", "-a", MASS_RENAME_APP, "--args" }
+  for _, p in ipairs(paths) do args[#args + 1] = p end
+  hs.task.new("/usr/bin/open", nil, args):start()
+  hs.alert.show("Mass Rename → " .. #paths .. (#paths == 1 and " item" or " items"))
+end)
+
 -- Auto-reload this config whenever a .lua file here changes ------------------
 hs.configWatcher = hs.pathwatcher.new(os.getenv("HOME") .. "/.hammerspoon/", function(files)
   for _, f in ipairs(files) do
