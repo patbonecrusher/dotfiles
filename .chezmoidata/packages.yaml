@@ -98,6 +98,7 @@ packages:
     - steam
     - tabby
     - the-unarchiver
+    - transmission
     - visual-studio-code
     - vlc
     - wezterm
