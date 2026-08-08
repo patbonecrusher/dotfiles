@@ -17,6 +17,7 @@ packages:
     - eza
     - direnv
     - fd
+    - ffmpeg
     - fnt
     - fzf
     - jq
@@ -64,6 +65,7 @@ packages:
     - antinote
     - arc
     - caffeine
+    - claude
     - daisydisk
     - devtoys
     - espanso
@@ -104,6 +106,7 @@ packages:
     - wezterm
     - xcodes-app
     - xquartz
+    - yacreader
     - zed
     - zen
     - zerotier-one
