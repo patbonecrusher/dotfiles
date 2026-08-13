@@ -33,6 +33,9 @@ alias c="clear" # Clear the terminal
 alias e="exit" # Exit the terminal
 alias dumpcolor='for i in {0..255}; do print -Pn "%K{$i} %k%F{$i}${(l:3::0:)i}%f " ${${(M)$((i%8)):#7}:+$'\n'}; done' # Print colors escape code.
 
+# Claude Code
+alias yolo='claude --dangerously-skip-permissions' # Claude Code, full control (skip permission prompts)
+
 # Networking
 alias listopenport='sudo lsof -i -P | grep -i "listen"' # List all open ports.
 alias myip="curl http://ipecho.net/plain; echo" # List my ip
