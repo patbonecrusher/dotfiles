@@ -5,10 +5,10 @@
 onboarding = false
 
 [theme]
-# "terminal" makes herdr inherit the host terminal's ANSI palette, so the
-# Ghostty "Django Reborn Again" theme shows through — same reasoning as keeping
-# tmux's window-style on `default`. Swap for catppuccin/tokyo-night/etc. to taste.
-name = "terminal"
+# herdr's built-in Dracula palette. (Was "terminal", which inherits the host
+# Ghostty theme; switch back to that if you'd rather herdr follow Ghostty.)
+# Other built-ins: catppuccin, tokyo-night, nord, gruvbox, one-dark, rose-pine…
+name = "dracula"
 
 [terminal]
 # default_shell left unset → uses $SHELL (brew zsh), then /bin/sh.
@@ -26,6 +26,14 @@ prefix = "ctrl+b"
 key = "prefix+alt+g"
 type = "pane"
 command = "lazygit"
+
+[ui.toast]
+# Pop notifications when a background agent changes state (finished / needs
+# attention) while you're focused on another pane. Options:
+#   off | herdr (in-app) | terminal (ask Ghostty to notify) | system (OS notify)
+# "system" gives real macOS desktop notifications.
+delivery = "system"
+# delay_seconds = 1
 
 [session]
 # herdr is an agent multiplexer and I run `claude` in panes — restore agent
