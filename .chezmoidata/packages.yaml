@@ -49,6 +49,7 @@ packages:
     - tio
     - tmux
     - tree
+    - uv
     - xz
     - yazi
     - zellij
