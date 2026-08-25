@@ -27,6 +27,11 @@ key = "prefix+alt+g"
 type = "pane"
 command = "lazygit"
 
+[ui]
+# Show the auto-detected agent label (claude/codex/…) on a pane's border when
+# no manual pane name is set (prefix+shift+p overrides it). Default is false.
+show_agent_labels_on_pane_borders = true
+
 [ui.toast]
 # Pop notifications when a background agent changes state (finished / needs
 # attention) while you're focused on another pane. Options:
