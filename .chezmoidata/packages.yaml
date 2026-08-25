@@ -1,6 +1,7 @@
 packages:
   brews:
     - antidote
+    - aria2
     - atuin
     - awscli
     - git
@@ -9,10 +10,12 @@ packages:
     - asciiquarium
     - bat
     - bottom
+    - btop
     - carapace
     - chezmoi
     - clang-format
     - cmake
+    - croc
     - dust
     - eza
     - direnv
@@ -34,6 +37,7 @@ packages:
     - m-cli
     - mise
     - navi
+    - ncdu
     - ncurses
     - fastfetch
     - neovim

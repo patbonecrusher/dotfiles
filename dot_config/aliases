@@ -36,6 +36,10 @@ alias dumpcolor='for i in {0..255}; do print -Pn "%K{$i} %k%F{$i}${(l:3::0:)i}%f
 # Claude Code
 alias yolo='claude --dangerously-skip-permissions' # Claude Code, full control (skip permission prompts)
 
+# File transfer / downloads
+alias send='croc send'                    # P2P end-to-end-encrypted file send; receiver runs `croc <code>`
+alias fetch='aria2c -c -x16 --continue'   # fast resumable download (16 connections); e.g. fetch <url>
+
 # Networking
 alias listopenport='sudo lsof -i -P | grep -i "listen"' # List all open ports.
 alias myip="curl http://ipecho.net/plain; echo" # List my ip

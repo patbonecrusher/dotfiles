@@ -9,7 +9,7 @@
 
 # classic command -> modern alternative binaries (best first)
 typeset -gA MODERN_ALTS=(
-  top   'btm zenith'
+  top   'btop btm zenith'
   cat   'bat'
   ls    'eza'
   du    'dust'
@@ -29,6 +29,7 @@ typeset -gA MODERN_ALTS=(
 
 # binary -> short description (no runtime brew calls)
 typeset -gA ALT_DESC=(
+  btop   'resource monitor with mouse + rich UI'
   btm    'bottom — graphical process/system monitor'
   zenith 'zoomable terminal system metrics'
   bat    'cat with syntax highlighting + git'
