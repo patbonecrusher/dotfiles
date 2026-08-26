@@ -115,3 +115,7 @@ packages:
     - zed
     - zen
     - zerotier-one
+  # Python CLI tools installed as isolated uv tool environments (~/.local/bin),
+  # NOT Homebrew. Installed by run_onchange_after_install-uv-tools.sh.tmpl.
+  uv_tools:
+    - mflux   # FLUX.2 local image gen (mflux-generate-flux2); used by the `flux` shell fn

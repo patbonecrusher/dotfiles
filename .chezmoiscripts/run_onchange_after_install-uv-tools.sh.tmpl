@@ -1,0 +1,21 @@
+#!{{ lookPath "sh" }}
+
+{{ if eq .chezmoi.os "darwin" -}}
+# uv-managed CLI tools — Python apps that don't belong in Homebrew. uv installs
+# each into its own isolated environment and drops shims in ~/.local/bin.
+# `uv tool install` is idempotent (no-ops when the tool is already present), so
+# this stays safe to re-run on every `chezmoi apply`. Runs in the `after` phase,
+# so uv (installed by the Homebrew `before` script) is already on PATH.
+#
+# Hash to force re-run when the tool list changes:
+# uv_tools: {{ .packages.uv_tools | join "," }}
+export PATH="$HOME/.local/bin:$PATH"
+
+if command -v uv >/dev/null 2>&1; then
+{{ range .packages.uv_tools -}}
+  uv tool install {{ . | quote }} || true
+{{ end -}}
+else
+  echo "uv not found on PATH; skipping uv tool installs (uv comes from Homebrew)." >&2
+fi
+{{ end -}}
