@@ -31,6 +31,9 @@ command = "lazygit"
 # Show the auto-detected agent label (claude/codex/…) on a pane's border when
 # no manual pane name is set (prefix+shift+p overrides it). Default is false.
 show_agent_labels_on_pane_borders = true
+# Order the agent side panel by attention priority (agents needing input first)
+# rather than by creation order.
+agent_panel_sort = "priority"
 
 [ui.toast]
 # Pop notifications when a background agent changes state (finished / needs
