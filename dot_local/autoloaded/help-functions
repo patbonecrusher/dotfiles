@@ -13,6 +13,8 @@ for d in "$shell_functions_location:Shell functions" "$bin_functions_location:Sc
     base=${f:t}
     [[ $base == _* ]] && continue              # skip private helpers
     desc=$(sed -n 's/^# description: //p' "$f" | head -1)
-    print -rP -- "${fg_bold[blue]}${(l:26:)base}${reset_color}: ${fg[green]}${desc:-—}${reset_color}"
+    # -r (raw), NOT -rP: -P would command-substitute backticks/$()/% in the
+    # description under PROMPT_SUBST. Colors are literal escapes, no -P needed.
+    print -r -- "${fg_bold[blue]}${(l:26:)base}${reset_color}: ${fg[green]}${desc:-—}${reset_color}"
   done
 done

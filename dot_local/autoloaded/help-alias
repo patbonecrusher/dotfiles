@@ -15,6 +15,10 @@ while IFS= read -r line; do
     name=${name%%=*}
     comments=""
     [[ $line == *'# '* ]] && comments=${line##*'# '}
-    print -rP -- "${fg_bold[blue]}${(l:26:)name}${reset_color}: ${fg[green]}${comments}${reset_color}"
+    # -r (raw), NOT -rP: prompt expansion (-P) would run backticks/$()/% in the
+    # comment as command substitution under PROMPT_SUBST — a comment like
+    # `croc <code>` then throws "parse error near >". The $fg/$reset_color are
+    # already literal ANSI escapes, so no -P is needed to colorize.
+    print -r -- "${fg_bold[blue]}${(l:26:)name}${reset_color}: ${fg[green]}${comments}${reset_color}"
   fi
 done < "$aliases_location"
