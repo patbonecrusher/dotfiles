@@ -116,7 +116,6 @@ alias esp531="source ~/.tools/espidf/esp-idf-v531/export.sh"
 alias helpers="source bin/helpers.sh"
 
 export GOBIN=~/.go
-#source "$HOME/.local/bin/env"
 
 function upto ()
 {
