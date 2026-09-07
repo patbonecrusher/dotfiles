@@ -31,9 +31,10 @@ command = "lazygit"
 # Show the auto-detected agent label (claude/codex/…) on a pane's border when
 # no manual pane name is set (prefix+shift+p overrides it). Default is false.
 show_agent_labels_on_pane_borders = true
-# Order the agent side panel by attention priority (agents needing input first)
-# rather than by creation order.
-agent_panel_sort = "priority"
+# Agent side panel ordering. herdr only supports "spaces" (grouped by space) or
+# "priority" (attention queue — agents needing input first); there is no
+# alphabetical mode. Using "spaces" to avoid the priority reshuffle.
+agent_panel_sort = "spaces"
 
 [ui.toast]
 # Pop notifications when a background agent changes state (finished / needs
@@ -46,4 +47,9 @@ delivery = "system"
 [session]
 # herdr is an agent multiplexer and I run `claude` in panes — restore agent
 # conversation sessions after a herdr server restart.
+# REQUIRES the Claude integration to be installed: `herdr integration install
+# claude` drops ~/.claude/hooks/herdr-agent-state.sh and a SessionStart hook in
+# ~/.claude/settings.json (mirrored into the chezmoi source dot_claude/
+# settings.json) that reports each session's ref to herdr. Without it this flag
+# has no session refs to resume and nothing comes back on restart.
 resume_agents_on_restore = true
