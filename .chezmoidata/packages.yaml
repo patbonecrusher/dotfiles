@@ -19,6 +19,7 @@ packages:
     - dust
     - eza
     - direnv
+    - espflash
     - fd
     - ffmpeg
     - fnt
@@ -45,6 +46,7 @@ packages:
     - readline
     - ripgrep
     - sqlite
+    - superfile
     - the_silver_searcher
     - tio
     - tmux
@@ -73,6 +75,7 @@ packages:
     - claude
     - daisydisk
     - devtoys
+    - discord
     - espanso
     - font-hack-nerd-font
     - font-lato
