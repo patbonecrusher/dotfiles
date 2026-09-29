@@ -42,6 +42,7 @@ packages:
     - ncurses
     - fastfetch
     - neovim
+    - opentofu
     - openssl@3
     - readline
     - ripgrep
