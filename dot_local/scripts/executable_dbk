@@ -1,0 +1,202 @@
+#!/usr/bin/env bash
+# description: Back up ~/Documents (iCloud-synced) to nostromo. Additive: never deletes.
+#
+# Usage:
+#   dbk                 back up ~/Documents to nostromo
+#   dbk -n              dry run: list what would be copied, change nothing
+#   dbk --allow-cloud   run even though some files are still cloud-only (see ICLOUD)
+#                       (combine with -n for a dry run in that state)
+#   dbk -h              show this help
+#
+# WHY
+#   ~/Documents is synced by iCloud (Desktop & Documents). iCloud is SYNC, not
+#   backup: a file deleted or corrupted on any device is deleted or corrupted
+#   everywhere. This script keeps an independent copy on nostromo that iCloud
+#   cannot reach.
+#
+# WHERE
+#   Source   ~/Documents/
+#   Copy     pat@nostromo.local:/Volumes/nostromo-pod/Documents/
+#   Old versions of overwritten files:
+#            /Volumes/nostromo-pod/Documents.overwritten/<date_time of the run>/
+#
+# ICLOUD (read this before changing anything)
+#   With "Optimize Mac Storage" on, most files are cloud-only placeholders
+#   ("dataless"): the name, size and date are on disk but the content is not.
+#   Reading a placeholder makes macOS download it on demand, one file at a
+#   time. That is slow and individual files can time out.
+#
+#   So every top-level item in ~/Documents is pinned with Finder's
+#   "Keep Downloaded" (select all inside Documents, right-click). Pinned items
+#   stay fully local. NOTE: the pin is on the items, not on Documents itself, so
+#   a NEW top-level file or folder is not pinned automatically. It starts out
+#   local, but macOS may evict it later. Pin new top-level items too.
+#
+#   Before copying, this script counts placeholders. If there are any it stops,
+#   because a backup that fights the iCloud downloader is fragile. Either wait
+#   for the download to finish or pass --allow-cloud to let rsync pull the
+#   files down on demand.
+#
+#   This applies to DRY RUNS too. Apple's rsync opens every file it would send
+#   even with -n, so a dry run blocks on the first placeholder until iCloud
+#   delivers it (seen 2026-10-02: hung 5+ minutes on an 800 KB file while iCloud
+#   was busy). With --allow-cloud a run may sit silently on one file for a long
+#   time. Ctrl-C is always safe: finished files are skipped on the next run.
+#
+#   Count what is still cloud-only:
+#     find ~/Documents -type f -flags +dataless | wc -l
+#
+# HOW RSYNC IS USED
+#   -a            archive: recurse, and preserve modification times, permissions
+#                 and symlinks. Preserving times is essential. rsync decides
+#                 "unchanged" by comparing size + modification time, so later
+#                 runs skip everything that has not changed and only take
+#                 seconds.
+#   -h            human-readable sizes.
+#   --partial     keep a partly transferred file if the run is interrupted, so
+#                 a big file resumes instead of starting over.
+#   --progress    per-file progress.   --stats  totals at the end.
+#   --exclude     .DS_Store / .localized (Finder noise) and *.icloud (legacy
+#                 placeholder files from old macOS versions).
+#   --backup --backup-dir=...
+#                 see OVERWRITES below.
+#
+#   Deliberately NOT used:
+#   --delete      NEVER add this. See NEVER DELETE below.
+#   -c            checksum compare. It reads every byte of every file on every
+#                 run, which forces a full iCloud download of anything not
+#                 local and makes each run take hours.
+#   -z            compression. Pointless on a LAN; most of Documents (PDFs,
+#                 images, archives) is already compressed.
+#   -u            skip files newer on the receiver. Nobody edits the nostromo
+#                 copy, and --backup already protects what gets replaced.
+#   -E / xattrs   extended attributes are not copied. iCloud puts its own
+#                 bookkeeping attributes on every file, which are meaningless on
+#                 nostromo. The cost: Finder tags/colours are not backed up.
+#
+# NEVER DELETE
+#   The copy on nostromo is additive. A file removed from ~/Documents STAYS on
+#   nostromo, forever, until you remove it there by hand. That is the whole
+#   point: if a deletion syncs through iCloud by accident (wrong device, bad
+#   app, fat finger), the nostromo copy is how you get the file back.
+#   Mirroring deletions with --delete would faithfully destroy the backup of
+#   exactly the files you need it for.
+#
+#   Consequences to expect:
+#   - nostromo slowly accumulates files you really did mean to delete.
+#   - A file or folder RENAMED or MOVED on the Mac shows up on nostromo under
+#     both the old and the new name. rsync cannot tell a rename from a
+#     delete + create.
+#   - To prune, delete on nostromo by hand, deliberately.
+#
+# OVERWRITES
+#   When a file changed on the Mac, the nostromo copy is replaced with the new
+#   version. Before replacing it, rsync moves the previous version to
+#     Documents.overwritten/<date_time>/<same relative path>
+#   so a bad edit or a corrupted file that synced through iCloud can still be
+#   rolled back. One folder per run that actually replaced something. These
+#   folders are never cleaned up automatically; delete old ones by hand when
+#   the disk fills up.
+#
+# RESTORE
+#   One file:    scp "pat@nostromo.local:/Volumes/nostromo-pod/Documents/path/file" .
+#   A folder:    rsync -ah "pat@nostromo.local:/Volumes/nostromo-pod/Documents/folder/" ~/Documents/folder/
+#   Old version: look under Documents.overwritten/ for the run that replaced it.
+#
+# NOTES
+#   - Both Macs use Apple's built-in rsync (openrsync). Every flag here was
+#     tested against it end to end.
+#   - Run from launchd/cron, the process needs Full Disk Access to read
+#     ~/Documents. Run by hand from a terminal it already has access.
+#   - The script refuses to run if the nostromo-pod volume is not mounted.
+#     Otherwise rsync would happily create /Volumes/nostromo-pod/Documents on
+#     nostromo's internal disk and fill it.
+#   - Env overrides, mainly for testing: DBK_SRC, DBK_HOST, DBK_VOLUME, DBK_DEST.
+
+set -u
+
+SRC="${DBK_SRC:-$HOME/Documents}"
+HOST="${DBK_HOST:-pat@nostromo.local}"
+VOLUME="${DBK_VOLUME:-/Volumes/nostromo-pod}"
+DEST="${DBK_DEST:-$VOLUME/Documents}"
+KEPT="$DEST.overwritten/$(date +%Y-%m-%d_%H%M%S)"
+
+log()  { printf '\033[1;34m==>\033[0m \033[1m%s\033[0m\n' "$*"; }
+warn() { printf '\033[1;33m[warn]\033[0m %s\n' "$*" >&2; }
+die()  { printf '\033[1;31m[error]\033[0m %s\n' "$*" >&2; exit 1; }
+
+DRY_RUN=0
+ALLOW_CLOUD=0
+for arg in "$@"; do
+  case "$arg" in
+    -n|--dry-run)  DRY_RUN=1 ;;
+    --allow-cloud) ALLOW_CLOUD=1 ;;
+    -h|--help)
+      # Print the comment block at the top of this file.
+      awk 'NR == 1 { next } /^#/ { sub(/^# ?/, ""); print; next } { exit }' "$0"
+      exit 0 ;;
+    *) die "unknown option: $arg (try: dbk -h)" ;;
+  esac
+done
+
+# 1. Can we read the source at all? (TCC blocks ~/Documents without permission.)
+ls "$SRC" >/dev/null 2>&1 \
+  || die "cannot read $SRC. Grant this terminal (or launchd job) Full Disk Access."
+
+# 2. iCloud placeholders. See ICLOUD above.
+log "Checking for cloud-only files in $SRC…"
+# Skip the names rsync excludes anyway (Finder's .localized marker is a
+# placeholder that iCloud never bothers to download).
+cloud=$(find "$SRC" -type f -flags +dataless \
+          ! -name .DS_Store ! -name .localized ! -name '*.icloud' 2>/dev/null | wc -l | tr -d ' ')
+if [ "$cloud" -gt 0 ]; then
+  if [ "$ALLOW_CLOUD" -eq 1 ]; then
+    warn "$cloud files are still cloud-only. rsync will download them on demand; expect it to be slow."
+  else
+    die "$cloud files are still cloud-only (not downloaded from iCloud).
+        Wait for iCloud to finish, pin new items with Finder's Keep Downloaded,
+        or re-run with --allow-cloud to download on demand during the copy."
+  fi
+else
+  echo "    all local."
+fi
+
+# 3. nostromo reachable, and the backup volume really mounted?
+log "Checking $HOST and $VOLUME…"
+ssh -o BatchMode=yes -o ConnectTimeout=10 "$HOST" "mount | grep -q ' on $VOLUME '"
+case $? in
+  0)   echo "    mounted." ;;
+  255) die "cannot reach $HOST over ssh (asleep? off the network?)." ;;
+  *)   die "$VOLUME is not mounted on $HOST. Refusing to write to its internal disk." ;;
+esac
+
+# 4. Copy. Additive only: there is no --delete here and there must never be.
+opts=(
+  -a -h --partial --progress --stats
+  --exclude '.DS_Store' --exclude '.localized' --exclude '*.icloud'
+  --backup --backup-dir="$KEPT"
+)
+if [ "$DRY_RUN" -eq 1 ]; then
+  opts+=(-n -v)
+  log "DRY RUN: $SRC/ -> $HOST:$DEST/ (nothing will be changed)"
+else
+  log "Backing up $SRC/ -> $HOST:$DEST/"
+fi
+
+rsync "${opts[@]}" "$SRC/" "$HOST:$DEST/"
+rc=$?
+
+# rsync creates the dated folder even when nothing was overwritten. rmdir only
+# removes it if it is empty, so real saved versions are never touched.
+if [ "$DRY_RUN" -eq 0 ]; then
+  ssh -o BatchMode=yes -o ConnectTimeout=10 "$HOST" "rmdir '$KEPT' 2>/dev/null; true"
+fi
+
+case $rc in
+  0)  log "Done." ;;
+  24) warn "Some files vanished while copying (changed or removed mid-run). Otherwise OK."
+      rc=0 ;;
+  23) warn "Some files could not be copied (rsync exit 23). Re-run dbk; completed files are skipped." ;;
+  *)  warn "rsync failed with exit code $rc. Re-run dbk; completed files are skipped." ;;
+esac
+exit $rc
